@@ -78,6 +78,8 @@ if __name__ == '__main__':
     while True:
         rw = RandomWalk()
         rw.fill_walk()
+        # 设置窗口尺寸，以英寸为单位
+        plt.figure(figsize=(10,6))
         #根据点数生成一个列表
         point_nums=list(range(rw.num_points));
         # 绘制。根据先后顺序渐变。s表示点的大小
@@ -92,3 +94,6 @@ if __name__ == '__main__':
         wan = input('还玩么？（y/n）')
         if wan == 'n':
             break
+
+
+
