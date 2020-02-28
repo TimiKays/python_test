@@ -53,11 +53,11 @@ class RandomWalk():
         while len(self.x_values) < self.num_points:
             # 计算横方向走的距离
             x_direction = choice([1, -1])
-            x_distance = choice([0, 8])
+            x_distance = choice([0, 1,2,3,4])
             x_step = x_direction * x_distance
             # 计算纵方向走的距离
             y_direction = choice([1, -1])
-            y_distance = choice([0,8])
+            y_distance = choice([0,1,2,3,4])
             y_step = y_direction * y_distance
             # 不允许原地踏步
             if x_step == 0 and y_step == 0:
