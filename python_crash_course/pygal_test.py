@@ -68,4 +68,4 @@ if __name__=='__main__':
     hist.x_titile="Result"
     hist.y_title="Frequency of Result"
     hist.add('乘积',times)
-    hist.render_to_file('die_visual3.svg') #保存
+    hist.render_to_file('output\\die_visual3.svg') #保存

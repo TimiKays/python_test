@@ -3,9 +3,9 @@ from datetime import datetime
 
 from matplotlib import pyplot as plt
 
-# filename='sitka_weather_2014.csv'
+# filename='resources\\sitka_weather_2014.csv'
 # 模拟数据缺失
-filename='death_valley_2014.csv'
+filename='resources\\death_valley_2014.csv'
 
 with open(filename) as f:
     reader=csv.reader(f)
@@ -23,7 +23,7 @@ with open(filename) as f:
             high=int(row[1])
             low=int(row[3])
         except ValueError:
-            print(date,'数据缺失')
+            print(date,'的数据缺失')
         else:
             dates.append(date)
             highs.append(high)
