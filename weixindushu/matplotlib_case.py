@@ -53,11 +53,11 @@ class RandomWalk():
         while len(self.x_values) < self.num_points:
             # 计算横方向走的距离
             x_direction = choice([1, -1])
-            x_distance = choice([0, 1,2,3,4])
+            x_distance = choice([0, 1, 2, 3, 4])
             x_step = x_direction * x_distance
             # 计算纵方向走的距离
             y_direction = choice([1, -1])
-            y_distance = choice([0,1,2,3,4])
+            y_distance = choice([0, 1, 2, 3, 4])
             y_step = y_direction * y_distance
             # 不允许原地踏步
             if x_step == 0 and y_step == 0:
@@ -67,7 +67,6 @@ class RandomWalk():
             next_y = self.y_values[-1] + y_step
             self.x_values.append(next_x)
             self.y_values.append(next_y)
-
 
 
 if __name__ == '__main__':
@@ -97,9 +96,7 @@ if __name__ == '__main__':
     #         break
 
     # 模拟花粉运动，用折线图画
-    rw_f=RandomWalk()
+    rw_f = RandomWalk()
     rw_f.fill_walk()
     plt.plot(rw_f.x_values, rw_f.y_values)
     plt.show()
-
-
