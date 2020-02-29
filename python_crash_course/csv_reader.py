@@ -3,7 +3,10 @@ from datetime import datetime
 
 from matplotlib import pyplot as plt
 
-filename='sitka_weather_2014.csv'
+# filename='sitka_weather_2014.csv'
+# 模拟数据缺失
+filename='death_valley_2014.csv'
+
 with open(filename) as f:
     reader=csv.reader(f)
     reader_row=next(reader)
@@ -14,10 +17,18 @@ with open(filename) as f:
     # 从第二行开始读取每一行的第一、二、四列，即日期、最高温度、最低温度，并存储到列表
     highs,dates,lows=[],[],[]
     for row in reader:
-        dates.append(datetime.strptime(row[0],'%Y-%m-%d'))
-        highs.append(int(row[1]))
-        lows.append(int(row[3]))
-    print(highs)
+        # 如果数据缺失，打印一条错误信息
+        try:
+            date=datetime.strptime(row[0],'%Y-%m-%d')
+            high=int(row[1])
+            low=int(row[3])
+        except ValueError:
+            print(date,'数据缺失')
+        else:
+            dates.append(date)
+            highs.append(high)
+            lows.append(low)
+    # print(highs)
 
     # 把日期和时间绘成图表
     fig=plt.figure(dpi=128,figsize=(10,6))
