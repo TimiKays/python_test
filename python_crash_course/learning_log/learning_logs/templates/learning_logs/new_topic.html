@@ -1,0 +1,17 @@
+{% extends "learning_logs/base.html" %}
+
+{% block content %}
+
+    <p>add a new topic</p>
+<!--告诉服务器将提交的表单数据发送到那里：视图函数new_topic-->
+<form action="{% url 'learning_logs:new_topic'%}" method='post'>
+<!--    防止攻击者利用表单来获取对服务器未经授权的访问-->
+    {%csrf_token%}
+<!--    以段落格式渲染所有表单元素，Django自动创建-->
+    {{ form.as_p}}
+<!--    创建提交按钮-->
+    <button name="submit">add topic</button>
+</form>
+
+
+{% endblock content %}
