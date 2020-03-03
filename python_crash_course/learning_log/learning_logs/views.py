@@ -22,3 +22,6 @@ def topic(request,topic_id):
     entries=topic.entry_set.order_by('-date_added') #倒序
     context={'topic':topic,'entries':entries}
     return render(request,'learning_logs/topic.html',context)
+
+def new_topic(request):
+    """用户新增一个topic的页面"""

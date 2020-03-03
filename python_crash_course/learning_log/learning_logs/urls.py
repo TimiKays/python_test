@@ -10,5 +10,6 @@ urlpatterns=[
     url(r'^$',views.index,name='index'),
     url(r'^topics/$',views.topics,name='topics'),
     # 匹配两个斜杠中的整数，并把该证书存储在topic_id中，d+表示任意位数的整数
-    url(r'^topics/(?P<topic_id>\d+)/$',views.topic,name='topic')
+    url(r'^topics/(?P<topic_id>\d+)/$',views.topic,name='topic'),
+    url(r'^new_topic/$',views.new_topic,name='new_topic')
 ]
