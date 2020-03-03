@@ -1,0 +1,15 @@
+{% extends "learning_logs/base.html" %}
+
+{% block content %}
+
+<form method="post" action="{% url 'users:register' %}">
+    {%csrf_token%}
+<!--    以段落格式渲染所有表单元素，Django自动创建-->
+    {{ form.as_p}}
+    <button name="submit">
+        注册
+    </button>
+    <input type="hidden" name="next" value="{% url 'learning_logs:index' %}" />
+</form>
+
+{% endblock content %}
