@@ -1,22 +1,68 @@
+<!DOCTYPE html>
 
-    <p>
-        <a href="{% url 'learning_logs:index' %}">Learning Log</a> -
-        <a href="{% url 'learning_logs:topics' %}">Topics</a>
-<!--        判断是否登录-->
-        {% if user.is_authenticated %}
-<!--        登录状态-->
-        Hello,{{user.username}}.
-        <a href="{% url 'users:logout' %}">
-            注销
-        </a>
+{% load bootstrap3 %}
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        {% else%}
-<!--       如果没有登录-->
-        <a href="{% url 'users:login' %}">登录</a>
-        <a href="{% url 'users:register' %}">注册</a>
-        {% endif %}
-    </p>
+    <title>Learning Log</title>
+<!-- 一个自定义模板-->
+    {% bootstrap_css %}
+<!--      启用页面交互行为-->
+    {% bootstrap_javascript %}
 
+  </head>
 
+  <body>
 
-{% block content %}{% endblock content %}
+    <!-- Static navbar -->
+    <nav class="navbar navbar-default navbar-static-top">
+      <div class="container">
+        <div class="navbar-header">
+<!--            当屏幕太小时导航栏会折叠，这时显示一个按钮，下拉显示所有的导航元素-->
+          <button type="button" class="navbar-toggle collapsed"
+              data-toggle="collapse" data-target="#navbar"
+              aria-expanded="false" aria-controls="navbar">
+          </button>
+<!--            链接到主页的文字-->
+          <a class="navbar-brand" href="{% url 'learning_logs:index' %}">
+              学习笔记</a>
+        </div>
+
+        <div id="navbar" class="navbar-collapse collapse">
+<!--            定义一组导航栏的链接，列表项为Topics-->
+          <ul class="nav navbar-nav">
+            <li><a href="{% url 'learning_logs:topics' %}">分类</a></li>
+          </ul>
+<!--定义一组导航栏右侧的链接，包含问候语，登出，或者注册，登录-->
+          <ul class="nav navbar-nav navbar-right">
+            {% if user.is_authenticated %}
+              <li><a>Hello, {{ user.username }}.</a></li>
+              <li><a href="{% url 'users:logout' %}">注销</a></li>
+            {% else %}
+              <li><a href="{% url 'users:register' %}">注册</a></li>
+              <li><a href="{% url 'users:login' %}">登录</a></li>
+            {% endif %}
+          </ul>
+        </div><!--/.nav-collapse -->
+
+      </div>
+    </nav>
+<!--    导航栏结束-->
+
+<!--页面的主要部分-->
+    <div class="container">
+
+      <div class="page-header">
+        {% block header %}{% endblock %}
+      </div>
+      <div>
+        {% block content %}{% endblock %}
+      </div>
+
+    </div> <!-- /container -->
+
+  </body>
+</html>

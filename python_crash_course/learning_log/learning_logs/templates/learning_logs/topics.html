@@ -1,20 +1,29 @@
 {% extends "learning_logs/base.html" %}
 
-{% block content %}
+{% block header %}
+    <h2>分类</h2>
+{% endblock header %}
 
-  <p>Topics</p>
+{% block content %}
+<h3>
+    <a href="{% url 'learning_logs:new_topic' %}">新建分类</a>
+</h3>
 <!--项目列表被称为无序列表，用ul表示-->
   <ul>
 <!--      循环-->
     {% for topic in topics %}
       <li>
-<!--          添加到topic的链接-->
-        <a href="{% url 'learning_logs:topic' topic.id %}">{{ topic }}</a>
+          <h3>
+              <!--添加到topic的链接-->
+              <a href="{% url 'learning_logs:topic' topic.id %}">{{ topic }}</a>
+          </h3>
+
 	  </li>
     {% empty %}
-      <li>No topics have been added yet.</li>
-<!--      结束循环-->
+      <li>该分类下还没有创建任何笔记。</li>
+<!--结束循环-->
     {% endfor %}
   </ul>
-<a href="{% url 'learning_logs:new_topic' %}">Add a new Topic</a>
+
+
 {% endblock content %}
