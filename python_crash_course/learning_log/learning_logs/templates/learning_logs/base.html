@@ -2,5 +2,21 @@
     <p>
         <a href="{% url 'learning_logs:index' %}">Learning Log</a> -
         <a href="{% url 'learning_logs:topics' %}">Topics</a>
+<!--        判断是否登录-->
+        {% if user.is_authenticated %}
+<!--        登录状态-->
+        Hello,{{user.username}}.
+        <a href="{% url 'users:logout' %}">
+            注销
+        </a>
+
+        {% else%}
+<!--       如果没有登录-->
+        <a href="{% url 'users:login' %}">登录</a>
+        <a href="{% url 'users:register' %}">注册</a>
+        {% endif %}
     </p>
+
+
+
 {% block content %}{% endblock content %}

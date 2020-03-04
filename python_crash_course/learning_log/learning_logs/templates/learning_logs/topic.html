@@ -3,8 +3,14 @@
 {% block content %}
 
   <p>Topic: {{ topic }}</p>
-
+    <p>
+    <a href="{% url 'learning_logs:new_entry' topic.id %}">
+        add new entry
+    </a>
+</p>
   <p>Entries:</p>
+
+
   <ul>
   {% for entry in entries %}
     <li>
@@ -12,6 +18,11 @@
       <p>{{ entry.date_added|date:'M d, Y H:i' }}</p>
 <!--        linebreaks表示将包含换行符的长条目转换成浏览器能够理解的文本块-->
       <p>{{ entry.text|linebreaks }}</p>
+        <p>
+            <a href="{% url 'learning_logs:edit_entry' entry.id%}">
+                eidt entry
+            </a>
+        </p>
     </li>
   {% empty %}
     <li>
@@ -19,5 +30,7 @@
     </li>
   {% endfor %}
   </ul>
+
+
 
 {% endblock content %}
