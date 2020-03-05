@@ -24,7 +24,7 @@ SECRET_KEY = '9juu_iv_py(a8)(%56=h&0l04*esgnxnacl8(jqi1_2^7xcgc$'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1','timikays.club']
 
 # Application definition
 
