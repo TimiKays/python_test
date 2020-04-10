@@ -15,6 +15,3 @@ ebot.save('Android')
 words=ebot.get_col(5)
 word_freq=dbot.get_word_frequency(words)
 dbot.generate_word_cloud(word_freq)
-
-
-000
