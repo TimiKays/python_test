@@ -98,7 +98,7 @@ def save_to_excel(results):
                 worksheet.write(row+1,col,results[row][col])
     now=datetime.datetime.now()
 
-    workbook.save('%s年%s月%s日爬取百度搜索%s结果%d条.xlsx'%(now.year,now.month,now.day,keyword,page*10))
+    workbook.save('%s年%s月%s日爬取百度搜索%s结果%d条.xls'%(now.year,now.month,now.day,keyword,page*10))
 
 
 
