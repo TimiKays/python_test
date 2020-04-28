@@ -14,7 +14,6 @@ import jieba
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 import numpy as np
-
 from scipy.misc import imread  # 导入有误，用来读图的，先不要了
 
 
@@ -43,7 +42,7 @@ def multithreading(pagenum):
 def get_data():
     # plist 为1-100页的URL的编号num,第二页的url以44结尾
     page_list = []
-    for html in range(1, 5):
+    for html in range(1, 10):
         j = 44 * (html - 1)
         page_list.append(j)
     print(page_list)
@@ -87,13 +86,14 @@ def get_data():
 
 def clean_data():
     data_source = pd.read_excel('./data/data1_original.xls')
-    print(data_source.shape)  # 查看清洗前的数据长宽，26列，180行
-    # msno.matrix(data, labels=True)      #msno查看数据缺失情况图，可有可无
+    # 查看清洗前的数据长宽，26列，180行
+    print(data_source.shape)
+
+    # 处理缺失值
+    # msno.matrix(data, labels=True)      #msno查看数据缺失情况图
     # msno.bar(data.sample(len(data)),figsize=(10,4))     #msno查看列的缺失值的条形图,figsize调整图的纵横比，
-
     half_count = len(data_source) / 2  # 计算行数的一半，如180行，则这里等于90
-
-    # pandas的方法，删除缺失值过半的列，返回删除了空值的dataframe对象
+    # dropna：pandas的方法，删除缺失值过半的列，返回删除了空值的dataframe对象
     # thresh=half_count，表示保留至少有90个非空值的行/列，
     # axis=1表示删除列，等价于axis=columns。如果要删除行，则axis=0或者index。默认为0
     data_source = data_source.dropna(thresh=half_count, axis=1)
@@ -111,12 +111,10 @@ def clean_data():
 
     # 缺失值只要在付款人数和评论数，把缺失值设为0
     data.fillna(0, inplace=True)
-
     # print(data.head())
     print(data.shape)
-    # 把省份和城市分开
-    # 对销售额进行格式化
 
+    # 字段重组。把省份和城市分开，对销售额进行格式化
     data['province'] = data.item_loc.apply(lambda x: x.split()[0])
     data['city'] = data.item_loc.apply(
         lambda x: x.split()[0] if len(x) < 4 else x.split()[1])  # 如果小于4，说明是直辖市，就取省名，如果大于4，就取市名
@@ -133,7 +131,7 @@ def clean_data():
     data['sale2'] = data['sale'].map(move_wan)
 
     print(data.dtypes)
-    # 开始把列转换类型
+    # 开始把列转换类型,有些分析需要用到category
     data['sales'] = data.sale2.astype('int')
     list_col = ['province', 'city']  # 设置数据集中的新增两列的属性
     for i in list_col:
@@ -147,52 +145,52 @@ def clean_data():
 
 
 def analyze_data():
-    # 标题分词
     data = pd.read_excel('./data/data2_cleaned.xls')
-    title = data.raw_title.values.tolist()
-    title_s = []
-    for line in title:
-        title_cut = jieba.lcut(line)
-        title_s.append(title_cut)
 
-    print(title_s)
+    # 得到标题一列，并把标题分词，去重，合并，统计次数
+    # title = data.raw_title.values.tolist()
+    # title_s = []
+    # for line in title:
+    #     title_cut = jieba.lcut(line)
+    #     title_s.append(title_cut)
+    # print(title_s)
+    #
+    # # 剔除不需要的单词，使用停用表，这里直接自己创建一个列表好了
+    # # stopwords = pd.read_excel('./data/stopwords.xlsx')
+    # # stopwords = stopwords.stopword.values.tolist()
+    # stopwords = ['抽纸','纸巾']
+    # pattern = '^[\u4e00-\u9fa5]{2,}$'  # 两个以上汉字
+    # title_clean = []
+    # for line in title_s:
+    #     line_clean = []
+    #     for word in line:
+    #         if word not in stopwords and re.match(pattern, word):  # 正则表达式
+    #             line_clean.append(word)
+    #     title_clean.append(line_clean)
+    # print(title_clean)
+    #
+    # # 统计每个词语的个数，先把单个列表中的词汇去重
+    # title_clean_dist = []
+    # for line in title_clean:
+    #     line_dist = []
+    #     for word in line:
+    #         if word not in line_dist:
+    #             line_dist.append(word)
+    #     title_clean_dist.append(line_dist)
+    #
+    # # 将所有词转换为一个list
+    # allwords_clean_dist = []
+    # for line in title_clean_dist:
+    #     for word in line:
+    #         allwords_clean_dist.append(word)
+    #
+    # # 将所有词语转换数据帧，计算每个词汇出现的次数
+    # df_allwords_clean_dist = pd.DataFrame({'allwords': allwords_clean_dist})
+    # word_count = df_allwords_clean_dist.allwords.value_counts().reset_index()
+    # word_count.columns = ['word', 'count']
+    # print(word_count.head())
 
-    # 剔除不需要的单词，使用停用表，这里直接自己创建一个列表好了
-    # stopwords = pd.read_excel('./data/stopwords.xlsx')
-    # stopwords = stopwords.stopword.values.tolist()
-    stopwords = [' ', '包', '抽', '非', '张', '超', '无', '装', '\\d', '*', '妮', '盒']
-    pattern = '^[\u4e00-\u9fa5]{2,}$'  # 两个以上汉字
-    title_clean = []
-    for line in title_s:
-        line_clean = []
-        for word in line:
-            if word not in stopwords and re.match(pattern, word):  # 正则表达式
-                line_clean.append(word)
-        title_clean.append(line_clean)
-    print(title_clean)
-
-    # 统计每个词语的个数，先把单个列表中的词汇去重
-    title_clean_dist = []
-    for line in title_clean:
-        line_dist = []
-        for word in line:
-            if word not in line_dist:
-                line_dist.append(word)
-        title_clean_dist.append(line_dist)
-
-    # 将所有词转换为一个list
-    allwords_clean_dist = []
-    for line in title_clean_dist:
-        for word in line:
-            allwords_clean_dist.append(word)
-
-    # 将所有词语转换数据帧，计算每个词汇出现的次数
-    df_allwords_clean_dist = pd.DataFrame({'allwords': allwords_clean_dist})
-    word_count = df_allwords_clean_dist.allwords.value_counts().reset_index()
-    word_count.columns = ['word', 'count']
-    print(word_count.head())
-
-    #     词云可视化
+    # 词云可视化
     # plt.figure(figsize=(10, 10))
     # pic = imread("./data/chouzhi.png")   #`imread` is deprecated in SciPy 1.0.0, and will be removed in 1.2.0.Use ``imageio.imread`` instead.
     # w_c = WordCloud(font_path="./data/SourceHanSans-Normal.otf",  #设置字体，要中文字体，ttf或otf格式
@@ -209,42 +207,131 @@ def analyze_data():
     # wc = w_c.fit_words({
     #     x[0]: x[1] for x in word_count.head(100).values   #???
     # })
-    #
     # # 显示词云图片
-    # plt.imshow(wc, interpolation='bilinear')
+    # plt.imshow(wc, interpolation='bilinear')  #遮罩
     # plt.axis("off")  #去掉坐标轴
     # plt.show()
 
     # 不同关键词的销量统计分析
-    sale_sum = []
-    for word in word_count.word:  # 根据统计词汇列表生成对应的销量列表
-        i = 0
-        s_list = []
-        for word_single_list in title_clean_dist:  # 包含所有词组列表的列表
-            if word in word_single_list:
-                try:
-                    s_list.append(data.sales[i])
-                except:
-                    s_list.append(0)
-            i += 1
-        sale_sum.append(sum(s_list))
+    # sale_sum = []
+    # for word in word_count.word:  # 根据统计词汇列表生成对应的销量列表
+    #     i = 0
+    #     s_list = []
+    #     for word_single_list in title_clean_dist:  # 包含所有词组列表的列表
+    #         if word in word_single_list:
+    #             try:
+    #                 s_list.append(data.sales[i])
+    #             except:
+    #                 s_list.append(0)
+    #         i += 1
+    #     sale_sum.append(sum(s_list))
+    # df_sale_sum = pd.DataFrame({'w_s_sum': sale_sum})  # 得到不同关键词的销量统计列
+    # # 把两个表拼起来
+    # df_word_count_sum = pd.concat([word_count, df_sale_sum], axis=1, ignore_index=True)
+    # # 没有纵轴标签了，加一下：
+    # df_word_count_sum.columns = ['word', 'count', 'sale_sum']
+    # print(df_word_count_sum.head(20))
 
-    df_sale_sum = pd.DataFrame({'w_s_sum': sale_sum})  # 得到不同关键词的销量统计列
-    # 把两个表拼起来
-    df_word_count_sum = pd.concat([word_count, df_sale_sum], axis=1, ignore_index=True)
-    # 没有纵轴标签了，加一下：
-    df_word_count_sum.columns = ['word', 'count', 'sale_sum']
-    print(df_word_count_sum.head(20))
-
+    font = matplotlib.font_manager.FontProperties(fname='./data/SourceHanSans-Normal.otf')
     # 把销量可视化-条形图
-    df_word_count_sum.sort_values('sale_sum', inplace=True, ascending=True)  # 按照销量升序
-    df_top30_sale = df_word_count_sum.tail(30)  # 得到销量最高的30个数据
+    # df_word_count_sum.sort_values('sale_sum', inplace=True, ascending=True)  # 按照销量升序
+    # df_top30_sale = df_word_count_sum.tail(30)  # 得到销量最高的30个数据
+    # index = np.arange(df_top30_sale.word.size)  # 30
+    # show_barh(index, df_top30_sale.sale_sum, list(df_top30_sale.word), '关键词销量条形图',font)
 
-    index = np.arange(df_top30_sale.word.size)  # 30
-    show_barh(index, df_top30_sale.sale_sum, list(df_top30_sale.word), '关键词销量条形图')
+    # 查看300元以下商品的价格分布情况
+    price=300
+    data_p = data[(data['view_price'] < price) & (data['sales']>1)]
+    print(data_p.shape)
+    print(data_p.head(10))
+    # title = '%s元以下的商品数据分布' % (price)
+    # draw_hist(data_p['view_price'],title,'价格','商品数量',font)
 
 
-def show_barh(li_y, li_width, y_label, title):
+    # 查看商品的销量分布情况
+    # data_s=data[(data['sales']>100) ]
+    # print(u'销量100以上的商品占比 : %0.3f' % (len(data_s) / len(data)))
+    # draw_hist(data_s['sales'], '销量100以上的商品分布', '销量', '商品数量',font)
+
+    # 查看不同价格区间的商品平均销量分布
+    data['price'] = data.view_price.astype('int')
+    # bins=[]
+    # for i in range(11):
+    #     bins.append(i*30)
+    # print(bins)
+    # data['group'] = pd.cut(data.price, bins)  # 根据价格分组，分成10组
+    # df_group = data.group.value_counts().reset_index()
+    # df_grouped_data = data[['sales', 'group']].groupby('group').mean().reset_index()  #mean计算平均数,sum计算总数
+    # print(df_grouped_data)
+    # index = np.arange(df_grouped_data.group.size)
+    # draw_bar(index, df_grouped_data.sales, df_grouped_data.group, '不同价格区间商品的平均销量分布',font)
+
+    # 计算300元以下商品的价格对销量的影响
+    ## 绘制散点图
+    # fig, ax = plt.subplots()
+    # ax.scatter(data_p['view_price'], data_p['sales'], color='red',s=5)
+    # ax.set_xlabel(u'价格', fontproperties=font)
+    # ax.set_ylabel(u'销量', fontproperties=font)
+    # title='商品价格对销量的影响_散点图'
+    # ax.set_title(title, fontproperties=font)
+    # plt.savefig('./data/%s.png' % title)
+    # # 绘制线性回归拟合线
+    # data['GMV'] = data['price'] * data['sales']
+    # import seaborn as sns
+    # sns.regplot(x='price', y='GMV', data=data, color='purple')
+    # plt.savefig('./data/%s.png' % ('商品价格对销量的影响_线性回归'))
+
+    #不同省份商品数量分布
+    plt.figure(figsize=(8,4))
+    data.province.value_counts().plot(kind='bar')
+    plt.xticks(rotation=0,fontproperties=font)
+    plt.xlabel(u'省份',fontproperties=font)
+    plt.ylabel(u'商品数量',fontproperties=font)
+    plt.title(u'不同省份商品数量分布',fontproperties=font)
+    plt.savefig('./data/不同省份商品数量分布.png')
+
+def draw_bar(li_x, li_y, li_x_label, title,font):
+    # 绘制条形图
+    font = matplotlib.font_manager.FontProperties(fname='./data/SourceHanSans-Normal.otf')
+    plt.figure(figsize=(8, 4))
+    plt.bar(li_x, li_y, color='blue',alpha=0.2)
+    plt.xticks(li_x, li_x_label, fontproperties=font, rotation=20,fontsize=8)
+    #不太需要坐标轴的标题
+    # plt.xlabel('Group')
+    # plt.ylabel('mean_sales')
+    plt.title(title, fontproperties=font)
+    ax = plt.subplot()
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    plt.savefig('./data/%s.png' % title)
+
+
+def draw_hist(data, title, x_title, y_title,font):
+    # 绘制直方图
+    # 参数：数值列表，标题字符串
+
+    plt.figure(figsize=(7, 5))
+    plt.hist(data, bins=20, color='purple', rwidth=0.6)
+    ### 参数说明###
+    # matplotlib.pyplot.hist(x,bins=None,range=None, density=None, bottom=None, histtype='bar', align='mid', log=False, color=None, label=None, stacked=False, normed=None)
+    # 关键参数
+    # x: 数据集，最终的直方图将对数据集进行统计
+    # bins: 统计的区间个数
+    # range: tuple, 显示的区间，range在没有给出bins时生效
+    # density: bool，默认为false，显示的是频数统计结果，为True则显示频率统计结果，这里需要注意，频率统计结果=区间数目/(总数*区间宽度)，和normed效果一致，官方推荐使用density
+    # histtype: 可选{'bar', 'barstacked', 'step', 'stepfilled'}之一，默认为bar，推荐使用默认配置，step使用的是梯状，stepfilled则会对梯状内部进行填充，效果与bar类似
+    # align: 可选{'left', 'mid', 'right'}之一，默认为'mid'，控制柱状图的水平分布，left或者right，会有部分空白区域，推荐使用默认
+    # log: bool，默认False,即y坐标轴是否选择指数刻度
+    # stacked: bool，默认为False，是否为堆积状图
+    plt.xlabel(x_title, fontproperties=font)
+    plt.ylabel(y_title, fontproperties=font)
+    plt.title(title, fontproperties=font)
+    # plt.show()
+    plt.savefig('./data/%s.png' % title)
+
+
+def show_barh(li_y, li_width, y_label, title,font):
+    # 参数：纵坐标值列表，横坐标值列表，纵轴标签列表，标题字符串
     # 中文的字体路径
     font = matplotlib.font_manager.FontProperties(fname='./data/SourceHanSans-Normal.otf')
 
@@ -260,8 +347,6 @@ def show_barh(li_y, li_width, y_label, title):
         tick_label=y_label,  # y轴标签
         align='center',  # 对齐
         # alpha=0.4, #透明度
-
-
     )
     # plt.yticks(index, list(df_top30_sale.word), fontproperties=font)  # y轴标签
     plt.yticks(fontproperties=font)
@@ -280,12 +365,13 @@ def show_barh(li_y, li_width, y_label, title):
     # 横坐标纵坐标的范围，弄高一点图形整个下移了，不弄了
     # plt.axis([0, 900000, 0, 31])
     # 去除右边和上边的边框
-    ax=plt.subplot()
+    ax = plt.subplot()
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
     # ax.spines['bottom'].set_visible(False)
     # ax.spines['left'].set_visible(False)
-    plt.show()
+    # plt.show()
+    plt.savefig('./data/%s.png' % title)
 
 
 if __name__ == '__main__':
