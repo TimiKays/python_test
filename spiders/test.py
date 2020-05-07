@@ -1,4 +1,6 @@
 # -*- coding: UTF-8 -*-
+
+
 import pandas as pd
 import numpy as np
 
@@ -31,9 +33,29 @@ import numpy as np
 # cats = pd.cut(ages, bins)
 # print(cats.codes)
 
-#---------------qcut分箱---------------------
-data=np.random.randn(1000)
-print(data)
-data2=pd.qcut(data,[0,0.1,0.5,0.8,1])
-print(data2)
-print(pd.value_counts(data2))
+# ---------------qcut分箱---------------------
+# data=np.random.randn(1000)
+# print(data)
+# data2=pd.qcut(data,[0,0.1,0.5,0.8,1])
+# print(data2)
+# print(pd.value_counts(data2))
+
+# ---------------request库性能测试-------------------
+import requests
+import time
+
+url='https://www.baidu.com/'
+start_time=time.time()
+def getHTMLText(url):
+    try:
+        r=requests.get(url)
+        r.raise_for_status()
+        r.encoding=r.apparent_encoding
+        return '爬到了！'
+    except:
+        return r.status_code
+for i in range(100):
+    print('第{}次爬取'.format(i))
+    print(getHTMLText(url))
+print('使用时长：',time.time()-start_time)
+# 使用时长： 20.4632465839386

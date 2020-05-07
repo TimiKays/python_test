@@ -1,18 +1,20 @@
 # -*- coding: utf-8 -*-
-import re
+
 import xlwt
 import time
+import re
 import requests
 import pandas as pd
 from retrying import retry
 from concurrent.futures import ThreadPoolExecutor
 import matplotlib
+import matplotlib.pyplot as plt
 import missingno as msno
 # 分词的
 import jieba
 # 可视化的
 from wordcloud import WordCloud
-import matplotlib.pyplot as plt
+
 import numpy as np
 from scipy.misc import imread  # 导入有误，用来读图的，先不要了
 
@@ -139,6 +141,10 @@ def clean_data():
     data = data.drop(['item_loc', 'view_sales', 'sale', 'sale2'], axis=1)  # 删除旧的两列数据
     print(data.dtypes)
     print(data.head())
+
+    # 把天猫的链接修改成能用的
+    data['detail_url']=data.detail_url.map(lambda x: 'https:'+x if ('tmall' in x) else x)
+
 
     # 保存到excel，没办法不覆盖之前的sheet，就重新建了个文件。后面再一起合并吧
     data.to_excel('./data/data2_cleaned.xls', sheet_name='清洗后', index=False)
@@ -267,28 +273,31 @@ def analyze_data():
     # draw_bar(index, df_grouped_data.sales, df_grouped_data.group, '不同价格区间商品的平均销量分布',font)
 
     # 计算300元以下商品的价格对销量的影响
-    ## 绘制散点图
-    # fig, ax = plt.subplots()
-    # ax.scatter(data_p['view_price'], data_p['sales'], color='red',s=5)
-    # ax.set_xlabel(u'价格', fontproperties=font)
-    # ax.set_ylabel(u'销量', fontproperties=font)
-    # title='商品价格对销量的影响_散点图'
-    # ax.set_title(title, fontproperties=font)
-    # plt.savefig('./data/%s.png' % title)
-    # # 绘制线性回归拟合线
-    # data['GMV'] = data['price'] * data['sales']
-    # import seaborn as sns
-    # sns.regplot(x='price', y='GMV', data=data, color='purple')
-    # plt.savefig('./data/%s.png' % ('商品价格对销量的影响_线性回归'))
+    # 绘制散点图
+    fig, ax = plt.subplots()
+    ax.scatter(data_p['view_price'], data_p['sales'], color='red',s=5)
+    ax.set_xlabel(u'价格', fontproperties=font)
+    ax.set_ylabel(u'销量', fontproperties=font)
+    title='商品价格对销量的影响_散点图'
+    ax.set_title(title, fontproperties=font)
+    plt.savefig('./data/%s.png' % title)
+    # 绘制线性回归拟合线
+    data['GMV'] = data['price'] * data['sales']
+    import seaborn as sns
+    sns.regplot(x='price', y='GMV', data=data, color='purple')
+    plt.savefig('./data/%s.png' % ('商品价格对销量的影响_线性回归'))
 
     #不同省份商品数量分布
-    plt.figure(figsize=(8,4))
-    data.province.value_counts().plot(kind='bar')
-    plt.xticks(rotation=0,fontproperties=font)
-    plt.xlabel(u'省份',fontproperties=font)
-    plt.ylabel(u'商品数量',fontproperties=font)
-    plt.title(u'不同省份商品数量分布',fontproperties=font)
-    plt.savefig('./data/不同省份商品数量分布.png')
+    # plt.figure(figsize=(8,4))
+    # data.city.value_counts().head(15).plot(kind='bar')
+    # #value_counts是series的方法，根据省份计算个数。
+    # # .plot是matplot的方法，生成柱状图，从高到低排序。
+    # plt.xticks(rotation=0,fontproperties=font)
+    # plt.xlabel(u'省份',fontproperties=font)
+    # plt.ylabel(u'商品数量',fontproperties=font)
+    # plt.title(u'top15城市商品数量分布',fontproperties=font)
+    # plt.savefig('./data/top15城市商品数量分布.png')
+
 
 def draw_bar(li_x, li_y, li_x_label, title,font):
     # 绘制条形图
@@ -350,8 +359,7 @@ def show_barh(li_y, li_width, y_label, title,font):
     )
     # plt.yticks(index, list(df_top30_sale.word), fontproperties=font)  # y轴标签
     plt.yticks(fontproperties=font)
-
-    # 前边设置的x、y值其实就代表了不同柱子在图形中的位置（坐标），通过for循环找到每一个x、y值的相应坐标——a、b，再使用plt.text在对应位置添文字说明来生成相应的数字标签，而for循环也保证了每一个柱子都有标签。
+    # 下面的x、y值其实就代表了不同柱子在图形中的位置（坐标），通过for循环找到每一个x、y值的相应坐标——a、b，再使用plt.text在对应位置添文字说明来生成相应的数字标签，而for循环也保证了每一个柱子都有标签。
     # '%.0f' % b,代表标注的文字，即每个柱子对应的y值，其中0表示不显示小数后面的数值，1就表示显示小数后面一位，以此类推；
     # ha='center', va= 'bottom'代表horizontalalignment（水平对齐）、verticalalignment（垂直对齐）的方式，
     # fontsize则是文字大小。条形图、折线图也是如此设置，饼图则在pie命令中有数据标签的对应参数。对于累积柱状图、双轴柱状图则需要用两个for循环，同时通过a与b的不同加减来设置数据标签位置。
