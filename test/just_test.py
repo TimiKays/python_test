@@ -57,5 +57,5 @@ import re
 # a+=1
 # print(a)
 
-
-
+s='F:/生活/待备份照片/after/2019/2019-11-00(51816).jpg'
+print(s[:-3])
