@@ -5,7 +5,7 @@
 #   存放照片的根目录
 # 算法：
 #   修改图片大小：
-#       设置最大宽度1000，最大高度700，如果图片分辨率超过任意一个，就等比例缩小
+#       设置最大宽度1000，最大高度1000，如果图片分辨率超过任意一个，就等比例缩小
 # 输出：
 #     保存图片
 #       目录名称
@@ -46,7 +46,7 @@ def save_img(im, yearpath,f,date):
     '''保存图片到指定位置，并降低图片质量'''
 
     # 从文件名中获取日期，没获取到就用默认日期
-    m = re.search(r'20\d{2}\-?[01]\d\-?[0123]\d', f)
+    m = re.search(r'20[12]\d-?[01]\d-?[0123]\d', f)
     if (m):
         date = m.group(0)
         if '-' not in date:
@@ -58,7 +58,7 @@ def save_img(im, yearpath,f,date):
         try:
             im.save(file_save_name)
         except(Exception) as e:
-            print('保存中文图片错误：',e)
+            print('保存中文图片错误：',e,f)
     else:
         # 防止重名，在后面加上(i)
         i=0
@@ -106,6 +106,8 @@ def get_allpic(path):
         yearpath=root+'/after/'+year
     else:
         yearpath=root + '/after/'+filename
+    if date=='2020年01月':
+        pass
     if filename!= root.split('/')[-1] and not os.path.exists(yearpath):
         date=filename
         os.mkdir(yearpath)
@@ -138,7 +140,7 @@ def get_allpic(path):
                 os.rename(path + '/' + f,others_path+'/'+f)
 
 if __name__ == '__main__':
-    root='F:/生活/待备份照片'
+    root='F:\生活\待备份照片'
     # 创建目标文件夹：after和others
     others_path = root + '/' + 'after/others'
     if not os.path.exists(others_path):
