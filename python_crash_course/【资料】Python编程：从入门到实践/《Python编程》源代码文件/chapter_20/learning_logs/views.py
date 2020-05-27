@@ -21,7 +21,7 @@ def topics(request):
 def topic(request, topic_id):
     """Show a single topic, and all its entries."""
     topic = get_object_or_404(Topic, id=topic_id)
-    # Make sure the topic belongs to the current user.
+    # Make sure the topic belongs to the current home.
     if topic.owner != request.user:
         raise Http404
         
