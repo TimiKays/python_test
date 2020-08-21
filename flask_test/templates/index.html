@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+</head>
+
+<body>
+<h1>
+  假装在登录：
+</h1>
+
+<div class="container">
+
+  <form action="" method="post">
+    <div>
+      {{form.name.label}}
+      {{form.name}}
+<!--      {% for err in form.name.errors %}-->
+<!--      <p sytle="color:red">{{err}}</p>-->
+<!--      {% endfor%}-->
+    </div>
+    <div>
+      {{form.pwd.label}}
+      {{form.pwd}}
+      {% for err in form.pwd.errors %}
+      <p sytle="color:red">{{err}}</p>
+       {% endfor%}
+    </div>
+    {{form.csrf_token}}
+    {{form.submit}}
+  </form>
+    <br>
+  {% if data %}
+  用户名为：{{data['name']}} <br>
+  密码为：{{data['pwd']}}
+  {% endif %}
+</div>
+</body>
+
+</html>
